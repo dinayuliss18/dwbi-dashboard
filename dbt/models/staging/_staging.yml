@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: Cleaned order item source at the atomic transaction grain.
+    columns:
+      - name: order_item_id
+        tests: [unique, not_null]
+      - name: quantity
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: "> 0"
+      - name: total_payment
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: ">= 0"
+  - name: stg_orders
+    description: Cleaned order headers with degenerate order number and lifecycle status.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: order_ts
+        tests: [not_null]
+  - name: stg_customer_profile_events
+    description: Append-only customer profile event history for SCD Type 2.
+    columns:
+      - name: customer_profile_event_id
+        tests: [unique, not_null]
+      - name: effective_at
+        tests: [not_null]

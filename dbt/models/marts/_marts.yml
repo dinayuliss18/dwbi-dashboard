@@ -1,0 +1,238 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: SCD Type 2 customer dimension. One row per customer profile version.
+    columns:
+      - name: customer_key
+        description: Surrogate key generated from customer natural key and version start timestamp.
+        tests: [unique, not_null]
+      - name: customer_nk
+        description: Source customer ID.
+        tests: [not_null]
+      - name: city_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_city')
+              field: city_key
+      - name: valid_from
+        tests: [not_null]
+      - name: valid_to
+        tests: [not_null]
+      - name: is_current
+        tests: [not_null]
+
+  - name: dim_product
+    description: Product dimension with product-level attributes, price, and current estimated cost.
+    columns:
+      - name: product_key
+        tests: [unique, not_null]
+      - name: product_nk
+        tests: [unique, not_null]
+      - name: category_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_category')
+              field: category_key
+
+  - name: dim_category
+    description: Category/subcategory conformed dimension used by product and sales marts.
+    columns:
+      - name: category_key
+        tests: [unique, not_null]
+      - name: category_nk
+        tests: [unique, not_null]
+
+  - name: dim_payment_method
+    description: Payment method dimension containing E-wallet, QRIS, COD, and Paylater.
+    columns:
+      - name: payment_method_key
+        tests: [unique, not_null]
+      - name: payment_method_name
+        tests:
+          - unique
+          - not_null
+          - accepted_values:
+              values: ['E-wallet', 'QRIS', 'COD', 'Paylater']
+
+  - name: dim_shipping
+    description: Shipping provider and service dimension.
+    columns:
+      - name: shipping_key
+        tests: [unique, not_null]
+      - name: shipping_service_nk
+        tests: [unique, not_null]
+
+  - name: dim_order_status
+    description: Order lifecycle status dimension.
+    columns:
+      - name: order_status_key
+        tests: [unique, not_null]
+      - name: order_status
+        tests: [unique, not_null]
+
+  - name: dim_voucher
+    description: Voucher dimension with payment eligibility and discount rules.
+    columns:
+      - name: voucher_key
+        tests: [unique, not_null]
+      - name: voucher_code
+        tests: [unique, not_null]
+
+  - name: dim_city
+    description: Conformed Indonesian city dimension containing 34 operating cities.
+    columns:
+      - name: city_key
+        tests: [unique, not_null]
+      - name: city_nk
+        tests: [unique, not_null]
+
+  - name: dim_date
+    description: Role-playing date dimension used for order date, payment date, shipment date, and delivery date.
+    columns:
+      - name: date_key
+        tests: [unique, not_null]
+
+  - name: dim_time
+    description: Role-playing time-of-day dimension used for order and payment time analysis.
+    columns:
+      - name: time_key
+        tests: [unique, not_null]
+
+  - name: dim_order_flags
+    description: Junk dimension combining low-cardinality order flags and cancellation stage.
+    columns:
+      - name: order_flags_key
+        tests: [unique, not_null]
+
+  - name: fct_order_item
+    description: Core Kimball fact table. Grain is one product item purchased in a single customer order transaction.
+    columns:
+      - name: order_item_key
+        tests: [unique, not_null]
+      - name: order_item_id
+        tests: [unique, not_null]
+      - name: customer_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_customer')
+              field: customer_key
+      - name: product_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_product')
+              field: product_key
+      - name: category_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_category')
+              field: category_key
+      - name: payment_method_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_payment_method')
+              field: payment_method_key
+      - name: shipping_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_shipping')
+              field: shipping_key
+      - name: voucher_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_voucher')
+              field: voucher_key
+      - name: order_date_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_date')
+              field: date_key
+      - name: order_time_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+              to: ref('dim_time')
+              field: time_key
+      - name: quantity
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: "> 0"
+      - name: unit_price
+        tests: [not_null]
+      - name: subtotal
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: ">= 0"
+      - name: total_payment
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: ">= 0"
+      - name: estimated_cost
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+              expression: ">= 0"
+      - name: profit
+        description: Total payment minus estimated product cost and shipping subsidy.
+
+  - name: mart_monthly_revenue
+    description: Analytics-ready monthly revenue and profit mart.
+  - name: mart_city_performance
+    description: City-level transaction, revenue, profit, delivery, and cancellation mart.
+  - name: mart_product_performance
+    description: Product performance mart for top products, returns, repurchase proxy, and turnover analysis.
+  - name: mart_payment_method_performance
+    description: Payment method usage, transaction value, and voucher-loss mart.
+  - name: mart_shipping_performance
+    description: Shipping provider/service usage, delay, cancellation, fastest, and slowest delivery mart.
+  - name: mart_customer_segments
+    description: Customer segmentation mart based on revenue and transaction frequency.
+  - name: mart_hourly_orders
+    description: Peak order hour mart.
+  - name: mart_voucher_recommendations
+    description: Voucher strategy by customer group.
+
+exposures:
+  - name: executive_order_management_dashboard
+    label: Executive Order Management Dashboard
+    type: dashboard
+    maturity: medium
+    url: http://localhost:3000
+    description: BI dashboard for revenue, customers, product, payments, shipping, vouchers, and operations KPIs.
+    depends_on:
+      - ref('mart_monthly_revenue')
+      - ref('mart_city_performance')
+      - ref('mart_product_performance')
+      - ref('mart_payment_method_performance')
+      - ref('mart_shipping_performance')
+      - ref('mart_customer_segments')
+      - ref('mart_hourly_orders')
+    owner:
+      name: DWBI Student Team
+      email: dwbi@example.com
