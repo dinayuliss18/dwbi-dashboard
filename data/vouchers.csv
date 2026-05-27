@@ -1,0 +1,5 @@
+voucher_id,voucher_code,voucher_name,voucher_type,rule_description,min_order_amount,discount_amount,cashback_rate
+1,NO_DISCOUNT,No discount,none,Tidak menggunakan voucher.,0,0,0.0
+2,CASHBACK_10_MIN_200K,Cashback 10% minimal belanja 200k,cashback,Minimal belanja Rp200.000 mendapat cashback 10% dari total belanja.,200000,0,0.1
+3,FREE_SHIPPING_MIN_50K,Free ongkir minimal belanja 50k,shipping_discount,Minimal belanja Rp50.000 mendapat subsidi ongkir.,50000,0,0.0
+4,ELECTRONICS_100K,Potongan langsung elektronik 100k,direct_discount,Potongan langsung Rp100.000 hanya untuk barang kategori Electronics.,0,100000,0.0

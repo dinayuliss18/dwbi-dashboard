@@ -1,0 +1,5 @@
+payment_method_id,payment_method_name,payment_group
+1,E-wallet,Digital wallet
+2,QRIS,QR payment
+3,COD,Cash on delivery
+4,Paylater,Consumer credit

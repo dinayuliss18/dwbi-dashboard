@@ -1,0 +1,9 @@
+shipping_service_id,shipping_provider,shipping_service,service_level,min_delivery_days,max_delivery_days
+1,JNE,REG,Regular,2,5
+2,JNE,YES,Express,1,2
+3,SiCepat,REG,Regular,2,4
+4,J&T,EZ,Regular,2,5
+5,AnterAja,Regular,Regular,2,5
+6,Ninja Xpress,Standard,Regular,3,6
+7,GrabExpress,Instant,Same Day,0,1
+8,GoSend,Instant,Same Day,0,1

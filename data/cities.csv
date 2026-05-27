@@ -1,0 +1,35 @@
+city_id,city_name,province,region,country
+1,Jakarta,DKI Jakarta,Java,Indonesia
+2,Bogor,Jawa Barat,Java,Indonesia
+3,Depok,Jawa Barat,Java,Indonesia
+4,Tangerang,Banten,Java,Indonesia
+5,Bekasi,Jawa Barat,Java,Indonesia
+6,Bandung,Jawa Barat,Java,Indonesia
+7,Cirebon,Jawa Barat,Java,Indonesia
+8,Semarang,Jawa Tengah,Java,Indonesia
+9,Surakarta,Jawa Tengah,Java,Indonesia
+10,Yogyakarta,DI Yogyakarta,Java,Indonesia
+11,Surabaya,Jawa Timur,Java,Indonesia
+12,Malang,Jawa Timur,Java,Indonesia
+13,Denpasar,Bali,Bali Nusa Tenggara,Indonesia
+14,Mataram,Nusa Tenggara Barat,Bali Nusa Tenggara,Indonesia
+15,Kupang,Nusa Tenggara Timur,Bali Nusa Tenggara,Indonesia
+16,Medan,Sumatera Utara,Sumatra,Indonesia
+17,Padang,Sumatera Barat,Sumatra,Indonesia
+18,Pekanbaru,Riau,Sumatra,Indonesia
+19,Batam,Kepulauan Riau,Sumatra,Indonesia
+20,Jambi,Jambi,Sumatra,Indonesia
+21,Palembang,Sumatera Selatan,Sumatra,Indonesia
+22,Bengkulu,Bengkulu,Sumatra,Indonesia
+23,Bandar Lampung,Lampung,Sumatra,Indonesia
+24,Pontianak,Kalimantan Barat,Kalimantan,Indonesia
+25,Palangka Raya,Kalimantan Tengah,Kalimantan,Indonesia
+26,Banjarmasin,Kalimantan Selatan,Kalimantan,Indonesia
+27,Samarinda,Kalimantan Timur,Kalimantan,Indonesia
+28,Balikpapan,Kalimantan Timur,Kalimantan,Indonesia
+29,Tarakan,Kalimantan Utara,Kalimantan,Indonesia
+30,Manado,Sulawesi Utara,Sulawesi,Indonesia
+31,Palu,Sulawesi Tengah,Sulawesi,Indonesia
+32,Makassar,Sulawesi Selatan,Sulawesi,Indonesia
+33,Kendari,Sulawesi Tenggara,Sulawesi,Indonesia
+34,Jayapura,Papua,Papua,Indonesia

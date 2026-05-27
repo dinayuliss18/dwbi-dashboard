@@ -1,0 +1,33 @@
+category_id,category_name,subcategory_name,department
+1,Electronics,Smartphone,Electronics
+2,Electronics,Audio,Electronics
+3,Electronics,Laptop Accessories,Electronics
+4,Electronics,Wearable,Electronics
+5,Fashion,Men Apparel,Fashion
+6,Fashion,Women Apparel,Fashion
+7,Fashion,Shoes,Fashion
+8,Fashion,Bags,Fashion
+9,Beauty,Skincare,Beauty
+10,Beauty,Makeup,Beauty
+11,Beauty,Fragrance,Beauty
+12,Beauty,Hair Care,Beauty
+13,Home & Living,Kitchen,Home & Living
+14,Home & Living,Storage,Home & Living
+15,Home & Living,Bedding,Home & Living
+16,Home & Living,Decor,Home & Living
+17,Sports,Fitness,Sports
+18,Sports,Outdoor,Sports
+19,Sports,Cycling,Sports
+20,Sports,Yoga,Sports
+21,Books,Business,Books
+22,Books,Technology,Books
+23,Books,Fiction,Books
+24,Books,Education,Books
+25,Mother & Baby,Baby Care,Mother & Baby
+26,Mother & Baby,Toys,Mother & Baby
+27,Mother & Baby,Feeding,Mother & Baby
+28,Mother & Baby,Maternity,Mother & Baby
+29,Automotive,Motorcycle,Automotive
+30,Automotive,Car Accessories,Automotive
+31,Automotive,Tools,Automotive
+32,Automotive,Oils,Automotive
