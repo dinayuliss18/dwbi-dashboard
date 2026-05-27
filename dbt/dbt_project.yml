@@ -1,0 +1,32 @@
+name: online_retail_kimball_dw
+version: "1.0.0"
+config-version: 2
+profile: online_retail_kimball_dw
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  online_retail_kimball_dw:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +schema: analytics
+      +materialized: table
+      dimensions:
+        +materialized: table
+      facts:
+        +materialized: table
+      analytics:
+        +materialized: table
