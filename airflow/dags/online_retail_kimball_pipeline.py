@@ -205,3 +205,99 @@ with DAG(
         >> stamp_init
     )
     seed_raw_data >> export_raw_csv_init
+    
+# ═════════════════════════════════════════════════════════════════════════════
+# DAG 2 — INCREMENTAL  (runs on schedule, skips when no new data)
+# ═════════════════════════════════════════════════════════════════════════════
+with DAG(
+    dag_id="online_retail_incremental",
+    description=(
+        "Scheduled incremental pipeline. Simulates new orders arriving, "
+        "detects them, and triggers dbt incremental models only when new "
+        "raw data is present."
+    ),
+    default_args=default_args,
+    start_date=datetime(2024, 1, 1),
+    schedule="0 */6 * * *",   # every 6 hours — adjust to match your SLA
+    catchup=False,
+    max_active_runs=1,
+    tags=["dwbi", "kimball", "retail", "dbt", "incremental"],
+) as incremental_dag:
+
+    # ── Step 0: Simulate new orders arriving in the raw layer ─────────────
+    # In production, replace this task with your real ingestion mechanism
+    # (Kafka consumer, S3 trigger, CDC from OLTP, etc.).
+    simulate_new_orders = BashOperator(
+        task_id="simulate_new_orders",
+        bash_command=(
+            f"python {SCRIPTS_DIR}/generate_synthetic_data.py "
+            "--mode append "
+            "--new-orders ${NEW_ORDER_COUNT:-500}"
+        ),
+        doc_md=(
+            "Simulates new retail transactions being appended to raw.*. "
+            "**Replace with your real ingestion task in production.** "
+            "Uses `--mode append` → only INSERTs new transaction rows; "
+            "dimension tables are not touched."
+        ),
+    )
+
+    # ── Step 1: Check for new rows since last dbt run ─────────────────────
+    detect_new_data = ShortCircuitOperator(
+        task_id="detect_new_data",
+        python_callable=_has_new_data,
+        doc_md=(
+            "Queries raw._pipeline_watermark to compare the last dbt run "
+            "timestamp against MAX(loaded_at) in raw.orders. "
+            "Returns True (proceed) only when new rows are found; "
+            "otherwise short-circuits and skips all downstream tasks."
+        ),
+    )
+
+# ── Step 2: dbt incremental run (only changed/new rows) ──────────────
+    dbt_run_incremental = BashOperator(
+        task_id="dbt_run_incremental",
+        bash_command=(
+            f"cd {DBT_DIR} && dbt run --profiles-dir {DBT_DIR} "
+            "--select tag:incremental"  # <--- Hapus 'state:modified+' di sini
+        ),
+        doc_md=(
+            "Runs only dbt models tagged `incremental`. The `fct_order_item` model "
+            "must use `{{ config(materialized='incremental') }}` with `unique_key` "
+            "and `incremental_strategy='merge'` for this to work correctly."
+        ),
+    )
+
+    # ── Step 3: Data quality tests ────────────────────────────────────────
+    dbt_test_incremental = BashOperator(
+        task_id="dbt_test_incremental",
+        bash_command=(
+            f"cd {DBT_DIR} && dbt test --profiles-dir {DBT_DIR} "
+            "--select tag:incremental"  # <--- Hapus 'state:modified+' di sini juga
+        ),
+    )
+
+    # ── Step 4: Refresh docs ──────────────────────────────────────────────
+    dbt_docs_incremental = BashOperator(
+        task_id="dbt_docs_generate",
+        bash_command=f"cd {DBT_DIR} && dbt docs generate --profiles-dir {DBT_DIR}",
+    )
+
+    # ── Step 5: Advance the watermark ────────────────────────────────────
+    stamp_incremental = PythonOperator(
+        task_id="stamp_dbt_watermark",
+        python_callable=_stamp_dbt_run,
+        doc_md=(
+            "Advances raw._pipeline_watermark['_dbt_last_run'] to NOW() so "
+            "the next scheduled run only picks up rows loaded after this point."
+        ),
+    )
+
+    (
+        simulate_new_orders
+        >> detect_new_data
+        >> dbt_run_incremental
+        >> dbt_test_incremental
+        >> dbt_docs_incremental
+        >> stamp_incremental
+    )
