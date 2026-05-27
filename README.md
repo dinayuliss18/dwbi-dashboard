@@ -229,4 +229,4 @@ Additional validation SQL is in [sql/data_quality_validation.sql](sql/data_quali
 
 ## Analytical SQL
 
-The file [sql/analytical_queries.sql](sql/analytical_query.sql) contains queries for all 22 required business questions.
+The file [sql/analytical_queries.sql](sql/analytical_query.sql) 
